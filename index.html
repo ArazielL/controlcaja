@@ -1,0 +1,875 @@
+<html><head><base href=".">
+    <meta charset="UTF-8">
+    <title>Carpinter&#xed;a Lopez - Control de Caja</title>
+    <style>
+        :root {
+            --bg-color: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            --text-color: #2c1810;
+            --card-bg: #fff;
+            --border-color: #e1e1e1;
+            --hover-bg: #f8f9fa;
+            --shadow-color: rgba(0,0,0,0.1);
+            --input-focus: rgba(139, 69, 19, 0.1);
+            --accent-color: #8b4513;
+            --accent-gradient: linear-gradient(145deg, #8b4513, #693610);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            --text-color: #e4e4e4;
+            --card-bg: #2d2d2d;
+            --border-color: #404040;
+            --hover-bg: #363636;
+            --shadow-color: rgba(0,0,0,0.3);
+            --input-focus: rgba(139, 69, 19, 0.2);
+            --accent-color: #c17f43;
+            --accent-gradient: linear-gradient(145deg, #c17f43, #8b4513);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: var(--bg-color);
+            height: 100vh;
+            box-sizing: border-box;
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 20px;
+            height: calc(100vh - 50px);
+        }
+
+        .right-panel {
+            width: 25%;
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 50px);
+            overflow: hidden;
+        }
+
+        .right-panel h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .left-panel {
+            width: 75%;
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo {
+            display: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .form-group {
+            margin-bottom: 0;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            white-space: normal;
+            padding: 8px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        input:focus, select:focus {
+            border-color: #8b4513;
+            outline: none;
+            box-shadow: 0 0 0 3px var(--input-focus);
+        }
+
+        button {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #693610, #8b4513);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.2);
+        }
+
+        .balance {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .balance-card {
+            background: var(--accent-gradient);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .balance-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .balance-card h3 {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .balance-card p {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .transactions {
+            margin-top: 0;
+            max-height: calc(75vh - 120px);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+            table-layout: auto;
+            margin-bottom: 15px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        th:nth-child(1), td:nth-child(1), 
+        th:nth-child(2), td:nth-child(2), 
+        th:nth-child(3), td:nth-child(3), 
+        th:nth-child(4), td:nth-child(4), 
+        th:nth-child(5), td:nth-child(5), 
+        th:nth-child(6), td:nth-child(6) { width: auto; }
+
+        .transactions thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .transactions thead::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 4px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        th {
+            background: var(--accent-gradient);
+            color: white;
+            font-weight: 500;
+        }
+
+        th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        tr:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .delete-btn {
+            background: linear-gradient(145deg, #dc3545, #c82333);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(145deg, #c82333, #dc3545);
+        }
+
+        .entrada {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .salida {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: var(--text-color);
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .converter {
+            margin-top: auto;
+            padding: 15px;
+            background: var(--hover-bg);
+            border-radius: 8px;
+            width: calc(100% - 30px);
+            flex-shrink: 0;
+        }
+
+        .converter h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .converter-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .converter-input input {
+            flex: 1;
+            margin-bottom: 0;
+            min-width: 0;
+        }
+
+        .converter-input select {
+            width: auto;
+            min-width: 80px;
+        }
+
+        .exchange-rate {
+            font-size: 12px;
+            color: var(--text-color);
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        #exchange-rate {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        #exchange-rate:focus {
+            border-color: #8b4513;
+            outline: none;
+            box-shadow: 0 0 0 3px var(--input-focus);
+        }
+
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+
+        .switch {
+            width: 60px;
+            height: 30px;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            display: inline-block;
+            border: 2px solid var(--border-color);
+        }
+
+        .switch::after {
+            content: '🌞';
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        #theme-toggle:checked + .switch::after {
+            content: '🌙';
+            transform: translateX(30px);
+        }
+
+        #theme-toggle {
+            display: none;
+        }
+
+        .cut-button {
+            background: linear-gradient(145deg, #28a745, #218838) !important;
+            margin-top: 0;
+            width: 100%;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .cut-button:hover {
+            background: linear-gradient(145deg, #218838, #28a745) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        }
+
+        .form-container {
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 10px;
+            padding-bottom: 20px;
+            overflow-x: hidden;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-container::-webkit-scrollbar-track {
+            background: var(--card-bg);
+            border-radius: 4px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-gradient);
+        }
+        
+        .register-initial {
+            background: linear-gradient(145deg, #ff9800, #f57c00) !important;
+            margin-top: 10px;
+            color: white;
+        }
+
+        .register-initial:hover {
+            background: linear-gradient(145deg, #f57c00, #ff9800) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+        }
+
+        .editable {
+            background-color: var(--card-bg);
+            border: 2px solid var(--accent-color);
+            padding: 5px;
+            border-radius: 4px;
+            width: 90%;
+        }
+
+        .edit-btn {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .edit-btn:hover {
+            background: linear-gradient(145deg, #45a049, #4CAF50);
+        }
+
+        .save-btn {
+            background: linear-gradient(145deg, #2196F3, #1976D2);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(145deg, #1976D2, #2196F3);
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="theme-switch">
+        <input type="checkbox" id="theme-toggle">
+        <label for="theme-toggle" class="switch"></label>
+    </div>
+    <div class="container">
+        <div class="right-panel">
+            <h1>Carpinter&#xed;a Lopez</h1>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="type">Tipo de Operaci&#xf3;n:</label>
+                    <select id="type">
+                        <option value="entrada">Entrada</option>
+                        <option value="salida">Salida</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Moneda:</label>
+                    <select id="currency">
+                        <option value="MXN">Pesos (MXN)</option>
+                        <option value="USD">D&#xf3;lares (USD)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Monto:</label>
+                    <input type="number" id="amount" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripci&#xf3;n:</label>
+                    <input type="text" id="description" required>
+                </div>
+
+                <button onclick="addTransaction()">Registrar Operaci&#xf3;n</button>
+                <button class="cut-button" onclick="generateCashCut()">Corte de Caja</button>
+                <button class="register-initial" onclick="registerInitialAmount()">Registrar Monto Inicial</button>
+
+                <div class="converter">
+                    <h3>Conversor de Moneda</h3>
+                    <div class="form-group">
+                        <label for="exchange-rate">Tipo de cambio (USD a MXN):</label>
+                        <input type="number" id="exchange-rate" value="17.50" step="0.01" onchange="updateExchangeRate()">
+                    </div>
+                    <div class="converter-input">
+                        <input type="number" id="convert-amount" placeholder="Cantidad" step="0.01">
+                        <select id="convert-from">
+                            <option value="MXN">MXN</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                    <button onclick="convertCurrency()">Convertir</button>
+                    <p class="exchange-rate" id="exchange-rate-display">Tipo de cambio: 1 USD = 17.50 MXN</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="left-panel">
+            <div class="balance">
+                <div class="balance-card">
+                    <h3>Balance en Pesos</h3>
+                    <p id="mxn-balance">&#x24;0.00 MXN</p>
+                </div>
+                <div class="balance-card">
+                    <h3>Balance en D&#xf3;lares</h3>
+                    <p id="usd-balance">&#x24;0.00 USD</p>
+                </div>
+            </div>
+            <div class="transactions">
+                <h3>Registro de Operaciones</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Moneda</th>
+                            <th>Monto</th>
+                            <th>Descripci&#xf3;n</th>
+                            <th>Acci&#xf3;n</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-table">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <script>let transactions = [];
+let EXCHANGE_RATE = 17.50;
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.getElementById('theme-toggle').checked = savedTheme === 'dark';
+}
+function toggleTheme(e) {
+  const isDark = e.target.checked;
+  const theme = isDark ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTransactions = localStorage.getItem('transactions');
+  if (savedTransactions) {
+    transactions = JSON.parse(savedTransactions);
+    updateDisplay();
+  }
+  const savedRate = localStorage.getItem('exchangeRate');
+  if (savedRate) {
+    EXCHANGE_RATE = parseFloat(savedRate);
+    document.getElementById('exchange-rate').value = EXCHANGE_RATE;
+    document.getElementById('exchange-rate-display').textContent = `Tipo de cambio: 1 USD = ${EXCHANGE_RATE.toFixed(2)} MXN`;
+  }
+  initTheme();
+  document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
+});
+function addTransaction() {
+  const type = document.getElementById('type').value;
+  const currency = document.getElementById('currency').value;
+  const amount = parseFloat(document.getElementById('amount').value);
+  const description = document.getElementById('description').value;
+  if (!amount || !description) {
+    alert('Por favor complete todos los campos');
+    return;
+  }
+  const transaction = {
+    id: Date.now(),
+    date: new Date().toLocaleString(),
+    type,
+    currency,
+    amount: type === 'entrada' ? amount : -amount,
+    description
+  };
+  transactions.unshift(transaction);
+  saveToLocalStorage();
+  updateDisplay();
+  clearForm();
+}
+function deleteTransaction(id) {
+  transactions = transactions.filter(t => t.id !== id);
+  saveToLocalStorage();
+  updateDisplay();
+}
+function saveToLocalStorage() {
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+}
+function updateDisplay() {
+    const table = document.getElementById('transactions-table');
+    table.innerHTML = '';
+    let mxnBalance = 0;
+    let usdBalance = 0;
+    
+    transactions.forEach(t => {
+        if (t.currency === 'MXN') {
+            mxnBalance += t.amount;
+        } else {
+            usdBalance += t.amount;
+        }
+        
+        const row = table.insertRow();
+        row.setAttribute('data-id', t.id);
+        row.innerHTML = `
+            <td>${t.date}</td>
+            <td class="${t.type}">${t.type}</td>
+            <td>${t.currency}</td>
+            <td class="${t.type}">${t.amount.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}</td>
+            <td>${t.description}</td>
+            <td>
+                <button class="edit-btn" onclick="editTransaction(${t.id})">Editar</button>
+                <button class="delete-btn" onclick="deleteTransaction(${t.id})">Eliminar</button>
+            </td>
+        `;
+    });
+    
+    document.getElementById('mxn-balance').textContent = `$${mxnBalance.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })} MXN`;
+    document.getElementById('usd-balance').textContent = `$${usdBalance.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })} USD`;
+}
+function clearForm() {
+  document.getElementById('amount').value = '';
+  document.getElementById('description').value = '';
+}
+function convertCurrency() {
+  const amount = parseFloat(document.getElementById('convert-amount').value);
+  const fromCurrency = document.getElementById('convert-from').value;
+  if (!amount) {
+    alert('Por favor ingrese una cantidad válida');
+    return;
+  }
+  let result;
+  let description;
+  if (fromCurrency === 'USD') {
+    result = amount * EXCHANGE_RATE;
+    description = `Conversión de ${amount.toFixed(2)} USD a MXN`;
+    const usdTransaction = {
+      id: Date.now(),
+      date: new Date().toLocaleString(),
+      type: 'salida',
+      currency: 'USD',
+      amount: -amount,
+      description: description
+    };
+    const mxnTransaction = {
+      id: Date.now() + 1,
+      date: new Date().toLocaleString(),
+      type: 'entrada',
+      currency: 'MXN',
+      amount: result,
+      description: description
+    };
+    transactions.unshift(mxnTransaction);
+    transactions.unshift(usdTransaction);
+  } else {
+    result = amount / EXCHANGE_RATE;
+    description = `Conversión de ${amount.toFixed(2)} MXN a USD`;
+    const mxnTransaction = {
+      id: Date.now(),
+      date: new Date().toLocaleString(),
+      type: 'salida',
+      currency: 'MXN',
+      amount: -amount,
+      description: description
+    };
+    const usdTransaction = {
+      id: Date.now() + 1,
+      date: new Date().toLocaleString(),
+      type: 'entrada',
+      currency: 'USD',
+      amount: result,
+      description: description
+    };
+    transactions.unshift(usdTransaction);
+    transactions.unshift(mxnTransaction);
+  }
+  alert(`${amount} ${fromCurrency} = ${result.toFixed(2)} ${fromCurrency === 'USD' ? 'MXN' : 'USD'}`);
+  saveToLocalStorage();
+  updateDisplay();
+  document.getElementById('convert-amount').value = '';
+}
+function updateExchangeRate() {
+  const newRate = parseFloat(document.getElementById('exchange-rate').value);
+  if (newRate > 0) {
+    EXCHANGE_RATE = newRate;
+    document.getElementById('exchange-rate-display').textContent = `Tipo de cambio: 1 USD = ${EXCHANGE_RATE.toFixed(2)} MXN`;
+    localStorage.setItem('exchangeRate', EXCHANGE_RATE);
+  } else {
+    alert('Por favor ingrese un tipo de cambio válido mayor a 0');
+    document.getElementById('exchange-rate').value = EXCHANGE_RATE;
+  }
+}
+function generateCashCut() {
+  if (transactions.length === 0) {
+    alert('No hay transacciones para generar el corte de caja');
+    return;
+  }
+  if (confirm('¿Está seguro de realizar el corte de caja? Esta acción guardará el registro actual en PDF y reiniciará todas las transacciones.')) {
+    const {
+      jsPDF
+    } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text('Corte de Caja - Carpintería Lopez', 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Fecha: ${new Date().toLocaleString()}`, 20, 30);
+    const mxnBalance = transactions.reduce((sum, t) => t.currency === 'MXN' ? sum + t.amount : sum, 0);
+    const usdBalance = transactions.reduce((sum, t) => t.currency === 'USD' ? sum + t.amount : sum, 0);
+    doc.text(`Balance Final en Pesos: $${mxnBalance.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })} MXN`, 20, 40);
+    doc.text(`Balance Final en Dólares: $${usdBalance.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })} USD`, 20, 50);
+    const tableData = transactions.map(t => [t.date, t.type, t.currency, t.amount.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }), t.description]);
+    doc.autoTable({
+      startY: 60,
+      head: [['Fecha', 'Tipo', 'Moneda', 'Monto', 'Descripción']],
+      body: tableData,
+      theme: 'striped',
+      styles: {
+        fontSize: 8
+      },
+      headStyles: {
+        fillColor: [139, 69, 19]
+      }
+    });
+    doc.save(`corte_caja_${new Date().toISOString().slice(0, 10)}.pdf`);
+    transactions = [];
+    saveToLocalStorage();
+    updateDisplay();
+    if (confirm('¿Desea registrar montos iniciales para el nuevo corte?')) {
+      registerInitialAmount();
+    }
+  }
+}
+function registerInitialAmount() {
+  const initialMXN = prompt("Ingrese el monto inicial en Pesos (MXN):");
+  const initialUSD = prompt("Ingrese el monto inicial en Dólares (USD):");
+  if (initialMXN !== null && initialUSD !== null) {
+    const mxnAmount = parseFloat(initialMXN);
+    const usdAmount = parseFloat(initialUSD);
+    if (!isNaN(mxnAmount) && !isNaN(usdAmount)) {
+      const mxnTransaction = {
+        id: Date.now(),
+        date: new Date().toLocaleString(),
+        type: 'entrada',
+        currency: 'MXN',
+        amount: mxnAmount,
+        description: 'Monto inicial MXN'
+      };
+      const usdTransaction = {
+        id: Date.now() + 1,
+        date: new Date().toLocaleString(),
+        type: 'entrada',
+        currency: 'USD',
+        amount: usdAmount,
+        description: 'Monto inicial USD'
+      };
+      transactions.unshift(usdTransaction);
+      transactions.unshift(mxnTransaction);
+      saveToLocalStorage();
+      updateDisplay();
+    } else {
+      alert('Por favor ingrese montos válidos');
+    }
+  }
+}
+
+function editTransaction(id) {
+    const transaction = transactions.find(t => t.id === id);
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    
+    const cells = row.getElementsByTagName('td');
+    
+    // Make cells editable except date and actions
+    cells[2].innerHTML = `
+        <select class="editable" data-field="currency">
+            <option value="MXN" ${transaction.currency === 'MXN' ? 'selected' : ''}>MXN</option>
+            <option value="USD" ${transaction.currency === 'USD' ? 'selected' : ''}>USD</option>
+        </select>
+    `;
+    
+    const absAmount = Math.abs(transaction.amount);
+    cells[3].innerHTML = `<input type="number" class="editable" data-field="amount" value="${absAmount}" step="0.01">`;
+    cells[4].innerHTML = `<input type="text" class="editable" data-field="description" value="${transaction.description}">`;
+    
+    // Replace delete button with save button
+    cells[5].innerHTML = `
+        <button class="save-btn" onclick="saveTransaction(${id})">Guardar</button>
+        <button class="delete-btn" onclick="deleteTransaction(${id})">Eliminar</button>
+    `;
+}
+
+function saveTransaction(id) {
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    const transaction = transactions.find(t => t.id === id);
+    
+    const newCurrency = row.querySelector('[data-field="currency"]').value;
+    const newAmount = parseFloat(row.querySelector('[data-field="amount"]').value);
+    const newDescription = row.querySelector('[data-field="description"]').value;
+    
+    if (!newAmount || !newDescription) {
+        alert('Por favor complete todos los campos');
+        return;
+    }
+    
+    // Update transaction
+    transaction.currency = newCurrency;
+    transaction.amount = transaction.type === 'entrada' ? Math.abs(newAmount) : -Math.abs(newAmount);
+    transaction.description = newDescription;
+    
+    saveToLocalStorage();
+    updateDisplay();
+}
+</script>
+</body>
+</html>
